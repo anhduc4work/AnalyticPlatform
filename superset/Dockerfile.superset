@@ -1,6 +1,7 @@
 FROM apache/superset:latest
 USER root
-RUN pip install --no-cache-dir --target=/app/.venv/lib/python3.10/site-packages 'fastmcp>=3.4' 'psycopg2-binary>=2.9'
+RUN pip install --no-cache-dir --target=/app/.venv/lib/python3.10/site-packages 'fastmcp>=3.4' 'psycopg2-binary>=2.9' 'playwright>=1.40'
+RUN python3 -m playwright install --with-deps chromium
 COPY superset_config.py /app/pythonpath/superset_config.py
 COPY superset-entrypoint.sh /app/superset-entrypoint.sh
 RUN chmod +x /app/superset-entrypoint.sh
