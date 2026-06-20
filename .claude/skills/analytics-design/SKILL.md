@@ -12,13 +12,77 @@ This skill maps analytical questions to chart types, plans the dashboard layout,
 
 ## Prerequisites
 
-- Analytical questions from intake (refined if needed).
-- EDA profile: column classifications, detected relationships, registered dataset IDs, data quality flags.
+- Analytical questions from `projects/{project_slug}/intake.md`.
+- EDA profile from `projects/{project_slug}/eda_profile.md`.
 - If running standalone, you need at minimum a list of questions and knowledge of the available data.
+- Write design spec to `projects/{project_slug}/design_spec.md` when complete.
 
 ## Procedure
 
-### Step 1: Determine Dashboard Type
+### Step 1: Brainstorm Visualization Ideas (Diverge)
+
+Before narrowing down, generate a broad set of 10-15 visualization ideas based on the data and questions. This is a creative divergence step.
+
+For each idea, list:
+- **Idea #**: Short title
+- **Chart type**: What kind of visual
+- **Data used**: Which columns/metrics
+- **Question answered**: Which business question it addresses
+- **Value**: Why this visual would be useful (High/Medium/Low)
+
+Present all ideas to the user in a numbered table:
+
+```
+## Visualization Ideas (Brainstorm)
+
+Based on the data profile and your questions, here are 10-15 possible visuals:
+
+| # | Idea | Chart Type | Data | Answers | Value |
+|---|------|-----------|------|---------|-------|
+| 1 | Total Revenue KPI | Big Number | SUM(sales) | "How much total?" | High |
+| 2 | Revenue by Month | Line | sales × order_date | "Trend over time?" | High |
+| 3 | Sales by Category | Bar | sales × category | "Which category leads?" | High |
+| 4 | Top 10 Products | Horizontal Bar | sales × product_name | "Best sellers?" | Medium |
+| 5 | Regional Breakdown | Pie | sales × region | "Revenue share by region?" | Medium |
+| 6 | Segment Comparison | Bar | sales × segment | "Consumer vs Corp vs Home?" | Medium |
+| 7 | Monthly Heatmap | Heatmap | sales × month × year | "Seasonal patterns?" | Medium |
+| 8 | Ship Mode Distribution | Pie | count × ship_mode | "How do we ship?" | Low |
+| 9 | State-level Map | Map | sales × state | "Geographic hotspots?" | Medium |
+| 10 | Sub-Category Ranking | Horizontal Bar | sales × sub_category | "Detailed breakdown?" | High |
+| 11 | YoY Growth Trend | Line (dual) | sales by year | "Are we growing?" | High |
+| 12 | Customer Count Trend | Line | distinct customers × month | "Customer base growth?" | Medium |
+| 13 | Avg Order Value | Big Number | AVG(sales) | "Typical order size?" | Medium |
+| 14 | Category × Region Matrix | Pivot Table | sales × category × region | "Multi-dim breakdown?" | Medium |
+| 15 | Sales Detail Table | Table | all columns | "Raw data access?" | Low |
+```
+
+### Step 2: Narrow Down (Converge)
+
+After presenting the brainstorm, ask the user:
+
+```
+Which visuals would you like to include? You can:
+- Pick by number: "1, 2, 3, 5, 10"
+- Say "top 8" to auto-select the highest-value ideas
+- Add your own: "add a scatter plot of sales vs quantity"
+- Remove: "skip 8 and 15"
+```
+
+If the user says "top N" or doesn't specify, auto-select based on:
+1. All "High" value ideas first
+2. Then "Medium" value ideas until reaching max_charts
+3. Never include "Low" value ideas unless explicitly requested
+
+**Rules for narrowing:**
+- Max charts from preferences (default 8)
+- Must include at least 1 KPI big number
+- Must include at least 1 trend line (if temporal data exists)
+- Avoid redundancy — don't include both a pie and a bar showing the same breakdown
+- Prefer a variety of chart types over repetition
+
+Once the user confirms their selection, proceed to Step 3.
+
+### Step 3: Determine Dashboard Type
 
 Based on the audience collected during intake, classify the dashboard:
 
@@ -31,7 +95,7 @@ Based on the audience collected during intake, classify the dashboard:
 
 The dashboard type influences chart selection, layout density, and complexity.
 
-### Step 2: Map Questions to Charts
+### Step 4: Map Selected Ideas to Chart Specs
 
 For each analytical question, select the appropriate chart type using this decision matrix:
 
@@ -55,7 +119,7 @@ For each analytical question, select the appropriate chart type using this decis
 - Every KPI big number should show comparison (e.g., vs. previous period) if temporal data is available.
 - Avoid redundant charts — if two questions are answered by the same chart, combine them.
 
-### Step 3: Plan Virtual Datasets
+### Step 5: Plan Virtual Datasets
 
 For questions that require joining multiple tables:
 
@@ -70,7 +134,7 @@ SQL: SELECT ... FROM table_a JOIN table_b ON table_a.fk = table_b.pk WHERE ...
 Purpose: Answers question(s) #X, #Y
 ```
 
-### Step 4: Plan Layout
+### Step 6: Plan Layout
 
 Follow IBCS STRUCTURE standards and Gestalt principles for the layout:
 
@@ -112,7 +176,7 @@ Follow IBCS STRUCTURE standards and Gestalt principles for the layout:
 - **S — Simplify**: Avoid clutter. One message per chart.
 - **S — Structure**: Organize information logically (KPIs → trends → comparisons → details).
 
-### Step 5: Plan Filter Bar
+### Step 7: Plan Filter Bar
 
 Select columns for the native filter bar:
 
@@ -125,14 +189,14 @@ Prioritize filters that:
 - Represent key business dimensions (e.g., region, product category, department).
 - Have reasonable cardinality (not too many, not too few values).
 
-### Step 6: Apply Chart Cap
+### Step 8: Apply Chart Cap
 
 Respect the `max_charts` preference from intake:
 - If total planned charts exceeds `max_charts`, prioritize by: KPIs first, then the chart most directly answering each question, then supporting charts.
 - Inform the user which charts were cut and why.
 - Suggest that cut charts could be added to a secondary dashboard.
 
-### Step 7: Present Design Spec for Approval
+### Step 9: Present Design Spec for Approval
 
 Present the complete design to the user in this format:
 

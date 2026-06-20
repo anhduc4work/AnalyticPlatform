@@ -12,10 +12,12 @@ This skill creates all charts, assembles the dashboard, configures filters, and 
 
 ## Prerequisites
 
-- Approved dashboard design spec (chart list, layout, filters, datasets).
+- Approved design spec from `projects/{project_slug}/design_spec.md`.
+- EDA profile from `projects/{project_slug}/eda_profile.md`.
 - Registered datasets in Superset (from EDA phase).
-- Virtual dataset SQL queries (from design phase, if any).
 - Authentication token from earlier phases (or re-authenticate).
+- Write build log to `projects/{project_slug}/build_log.md`.
+- Save .docx output to `projects/{project_slug}/output/`.
 
 ## Procedure
 

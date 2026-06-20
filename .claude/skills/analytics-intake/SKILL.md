@@ -97,7 +97,19 @@ If any required input is missing, ask the user for it. List exactly what is miss
 - Refresh: [interval or "none"]
 ```
 
-5. **Save and hand off**: Once the user confirms, save the structured inputs so downstream skills can access them. Suggest the user run `/analytics-eda` next to profile and explore the data.
+5. **Create project folder**: Create a subfolder under `projects/` for this project:
+   ```
+   projects/
+   └── {project_slug}/           # e.g. "superstore-sales", "plantex-cashflow"
+       ├── intake.md             # The structured summary from step 4
+       ├── data/                 # Raw data files (CSV, etc.) if any
+       └── output/               # Will hold .docx and exports later
+   ```
+   - Derive `project_slug` from the project title (lowercase, hyphens, no spaces)
+   - Write the structured summary to `projects/{project_slug}/intake.md`
+   - This folder will be used by all downstream skills (EDA writes `eda_profile.md`, design writes `design_spec.md`, build writes output files)
+
+6. **Hand off**: Suggest the user run `/analytics-eda` next to profile and explore the data.
 
 ## Important Notes
 

@@ -10,8 +10,9 @@ This skill implements the CRISP-DM Data Understanding phase. Your job is to conn
 
 ## Prerequisites
 
-- Analytics intake should be completed (connection details and business context available).
+- Analytics intake should be completed — check `projects/{project_slug}/intake.md` for inputs.
 - If running standalone, you need at minimum a database connection (ID, name, or connection string).
+- Write EDA results to `projects/{project_slug}/eda_profile.md` when complete.
 
 ## Procedure
 

@@ -50,5 +50,11 @@ yarn.lock
 !.claude/
 !.mcp.json.template
 
+# ── Project data (local only, not tracked) ─────────────────────────────────
+projects/
+
+# ── Downloaded datasets ────────────────────────────────────────────────────
+data/
+
 # ── Plan files (local only) ────────────────────────────────────────────────
 *.plan.md
