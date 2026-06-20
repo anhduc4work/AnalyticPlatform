@@ -62,6 +62,35 @@ After building or modifying ANY dashboard, ALWAYS verify it visually using Playw
 
 **Why:** Dashboard APIs return success even when charts render incorrectly. Only a visual check catches layout issues, ghost charts, empty charts, and rendering errors. The user should never see a broken dashboard.
 
+## Chart Styling Rules
+
+When creating charts via `generate_chart`, follow these rules to prevent visual overlap and ensure readability:
+
+### Axis Title vs Axis Label Overlap
+Y-axis titles (e.g. "Revenue (USD)") overlap with axis tick labels (e.g. "$800,000") in Superset. There is no `nameGap` control via the API.
+
+**Rule: Do NOT set `y_axis_title` when using currency or large number formats.** The metric label in the legend already conveys the same information. Setting both causes overlap.
+
+When creating charts via `generate_chart`:
+- Use `y_axis: {"format": "$,.0f"}` but do NOT set `y_axis: {"title": "..."}`
+- The metric label (e.g. `"label": "Revenue (USD)"`) appears in the legend — that's sufficient
+- If you must have an axis title, use abbreviated formats (`$~s` → "$800K") to keep labels short
+
+### Axis Formatting Best Practices
+| Data Range | Recommended Format | Renders As |
+|-----------|-------------------|-----------|
+| 0 - 999 | `,.0f` | 500 |
+| 1K - 999K | `$,.0f` or `$~s` | $500,000 or $500K |
+| 1M+ | `$,.2s` | $2.3M |
+| Percentages | `.1%` | 45.2% |
+| Decimals | `,.2f` | 1,234.56 |
+
+### Other Visual Rules
+- **Bar chart labels**: Don't enable data labels on bars when there are many categories — they overlap
+- **Pie chart**: Max 6 slices. Beyond that, use a bar chart instead
+- **Legend**: Position `top` or `right`. Never let it overlap chart area
+- **Chart height in dashboard**: KPIs = 25-30, trend lines = 45-50, comparison charts = 40, tables/pivots = 50-60
+
 ## MCP Servers
 
 - Community MCP auth: call `superset_auth_authenticate_user` at session start
