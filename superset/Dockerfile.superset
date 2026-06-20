@@ -1,0 +1,8 @@
+FROM apache/superset:latest
+USER root
+RUN pip install --no-cache-dir --target=/app/.venv/lib/python3.10/site-packages 'fastmcp>=3.4' 'psycopg2-binary>=2.9'
+COPY superset_config.py /app/pythonpath/superset_config.py
+COPY superset-entrypoint.sh /app/superset-entrypoint.sh
+RUN chmod +x /app/superset-entrypoint.sh
+USER superset
+ENTRYPOINT ["/app/superset-entrypoint.sh"]

@@ -1,0 +1,54 @@
+# ── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+build/
+dist/
+*.whl
+
+# Virtual environments
+.venv/
+proxy-venv/
+venv/
+env/
+
+# ── Environment & secrets ───────────────────────────────────────────────────
+.env
+.superset_token
+
+# ── OS files ─────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── IDE / editor ─────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ── Docker volumes (local data) ─────────────────────────────────────────────
+docker-volumes/
+superset_home/
+
+# ── Node ─────────────────────────────────────────────────────────────────────
+node_modules/
+package-lock.json
+yarn.lock
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+
+# ── Generated files (machine-specific) ──────────────────────────────────────
+.mcp.json
+.claude/settings.local.json
+
+# ── Do NOT ignore these (tracked on purpose) ─────────────────────────────────
+# .claude/              — CLAUDE.md and skills
+# .mcp.json.template    — MCP config template (portable)
+!.claude/
+!.mcp.json.template
+
+# ── Plan files (local only) ────────────────────────────────────────────────
+*.plan.md

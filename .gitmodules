@@ -1,0 +1,3 @@
+[submodule "superset/superset-mcp"]
+	path = superset/superset-mcp
+	url = https://github.com/nicholasgriffintn/superset-mcp.git
