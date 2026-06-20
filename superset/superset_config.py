@@ -12,6 +12,9 @@ FEATURE_FLAGS = {
     "EMBEDDED_SUPERSET": True,
 }
 
+# CSP: allow unsafe-eval for Handlebars chart rendering
+TALISMAN_ENABLED = False
+
 # Allow CORS for embedding
 ENABLE_CORS = True
 CORS_OPTIONS = {
