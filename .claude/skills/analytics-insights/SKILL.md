@@ -55,6 +55,52 @@ SELECT current.value, prior.value,
        ROUND(((current.value - prior.value) / prior.value * 100)::numeric, 1) as growth_pct
 ```
 
+**Seasonality detection (monthly pattern):**
+```sql
+SELECT EXTRACT(MONTH FROM date_col) as month,
+       ROUND(AVG(metric)::numeric, 0) as avg_value
+FROM table_name GROUP BY month ORDER BY month
+```
+
+**Profitability analysis (if profit/margin columns exist):**
+```sql
+SELECT category, ROUND(SUM(sales)::numeric, 0) as revenue,
+       ROUND(SUM(profit)::numeric, 0) as profit,
+       ROUND((SUM(profit) * 100.0 / NULLIF(SUM(sales), 0))::numeric, 1) as margin_pct
+FROM table_name GROUP BY category ORDER BY margin_pct DESC
+```
+
+**Discount impact analysis (if discount column exists):**
+```sql
+SELECT CASE WHEN discount = 0 THEN 'No Discount'
+            WHEN discount <= 0.2 THEN '1-20%'
+            ELSE '>20%' END as discount_band,
+       COUNT(*) as orders, ROUND(AVG(profit)::numeric, 2) as avg_profit
+FROM table_name GROUP BY 1 ORDER BY 1
+```
+
+**Pareto analysis (top N contributing to X% of total):**
+```sql
+WITH ranked AS (
+  SELECT dimension, SUM(metric) as total,
+         SUM(SUM(metric)) OVER (ORDER BY SUM(metric) DESC) as running_total,
+         SUM(SUM(metric)) OVER () as grand_total
+  FROM table_name GROUP BY dimension
+)
+SELECT dimension, total,
+       ROUND((running_total * 100.0 / grand_total)::numeric, 1) as cumulative_pct
+FROM ranked WHERE running_total <= grand_total * 0.8
+```
+
+**Correlation proxy (high sales vs low profit):**
+```sql
+SELECT dimension, ROUND(SUM(sales)::numeric, 0) as revenue,
+       ROUND(SUM(profit)::numeric, 0) as profit,
+       CASE WHEN SUM(sales) > 0 AND SUM(profit) / SUM(sales) < 0.05 THEN 'HIGH SALES LOW PROFIT'
+            WHEN SUM(profit) < 0 THEN 'LOSS MAKER' ELSE 'OK' END as flag
+FROM table_name GROUP BY dimension ORDER BY revenue DESC
+```
+
 ### Step 2: Interpret Results
 
 For each query result, produce an insight following this structure:
@@ -75,6 +121,12 @@ Categories of insights to look for:
 | Gap | "South region = 17.2% vs West = 31.4%" | Opportunity or problem |
 | Correlation | "High avg sale ($456) but low volume" | Pricing vs volume trade-off |
 | Threshold | ">20% null rate in column X" | Data quality concern |
+| Seasonality | "Nov-Dec = 35% of annual revenue" | Inventory/staffing planning |
+| High sales low profit | "Furniture: $728K revenue but only 2% margin" | Pricing review needed |
+| Discount erosion | "Orders with >20% discount avg -$5 profit" | Discount policy change |
+| Pareto (80/20) | "Top 5 products = 40% of profit" | Focus on winners |
+| Loss makers | "Tables sub-category: net loss of -$17K" | Discontinue or reprice |
+| Segment difference | "Consumer = volume, Corporate = margin" | Segment-specific strategy |
 
 ### Step 3: Rank Insights by Impact
 
