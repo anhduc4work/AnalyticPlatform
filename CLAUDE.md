@@ -113,10 +113,36 @@ Use native Superset `table` or `pivot_table_v2` instead.
 
 ## MCP Servers
 
-- Community MCP auth: call `superset_auth_authenticate_user` at session start
-- Official MCP tools use `request` wrapper: `{"request": {"dataset_id": 3, ...}}`
-- Official MCP `generate_chart` requires `config` field matching the chart type schema
-- Use `get_chart_type_schema` to get valid config shapes before creating charts
+Two MCP servers. Priority: Official > bintocher.
+
+### superset-official (Apache built-in)
+- High-level tools: `generate_chart`, `generate_dashboard`, `create_virtual_dataset`, `get_chart_type_schema`
+- Tools use `request` wrapper: `{"request": {"dataset_id": 3, ...}}`
+- `generate_chart` requires `config` field matching the chart type schema
+- Always call `get_chart_type_schema` before creating charts
+- `generate_dashboard` is the ONLY reliable way to create dashboards with chart associations
+
+### superset (bintocher/mcp-superset)
+- 137 tools: full CRUD, security/RBAC, native filters, export/import, reports
+- Installed via `pip install mcp-superset`, runs as `mcp-superset --transport stdio`
+- Auto-authenticates via env vars `SUPERSET_USERNAME`/`SUPERSET_PASSWORD`
+- Use for: dashboard updates (position_json, json_metadata), database CRUD, SQL Lab, security, filters, export/import
+- Tool names: `superset_dashboard_*`, `superset_chart_*`, `superset_database_*`, `superset_sqllab_*`, etc.
+
+### When to use which
+| Task | Use |
+|------|-----|
+| Create chart | Official `generate_chart` |
+| Create dashboard | Official `generate_dashboard` |
+| Create virtual dataset | Official `create_virtual_dataset` |
+| Get chart type schema | Official `get_chart_type_schema` |
+| Update dashboard layout/filters | bintocher `superset_dashboard_update` |
+| Update chart params | bintocher `superset_chart_update` |
+| Database CRUD | bintocher `superset_database_*` |
+| SQL execution | bintocher `superset_sqllab_execute` |
+| Security/RBAC | bintocher `superset_user_*`, `superset_role_*` |
+| Native filter CRUD | bintocher `superset_dashboard_filter_*` |
+| Export/Import | bintocher `superset_dashboard_export/import` |
 
 ## Analytics Framework
 

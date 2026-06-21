@@ -69,27 +69,17 @@ create_venv() {
     fi
 }
 
-# ── 2. Community MCP server venv (superset-mcp) ─────────────────────────────
-info "Setting up community MCP server venv..."
-
-if [ ! -d "$MCP_DIR" ]; then
-    die "superset-mcp directory not found at $MCP_DIR. Did you initialise the git submodule?  Run:  git submodule update --init --recursive"
+# ── 2. Install bintocher mcp-superset (137 tools) ──────────────────────────
+info "Installing mcp-superset (bintocher)..."
+if command -v mcp-superset >/dev/null 2>&1; then
+    info "mcp-superset already installed."
+else
+    pip3 install --break-system-packages mcp-superset 2>/dev/null \
+        || pip3 install mcp-superset 2>/dev/null \
+        || die "Failed to install mcp-superset. Try: pip3 install mcp-superset"
 fi
 
-create_venv "$MCP_VENV" \
-    httpx "mcp[cli]" fastapi uvicorn python-dotenv python-docx
-
-# Also install the superset-mcp package itself in editable mode if pyproject.toml exists
-if [ -f "$MCP_DIR/pyproject.toml" ]; then
-    info "Installing superset-mcp package (editable) ..."
-    if $USE_UV; then
-        uv pip install --python "$MCP_VENV/bin/python" -e "$MCP_DIR"
-    else
-        "$MCP_VENV/bin/pip" install -e "$MCP_DIR"
-    fi
-fi
-
-# ── 3. Proxy venv ───────────────────────────────────────────────────────────
+# ── 3. Proxy venv (for official MCP stdio bridge) ──────────────────────────
 info "Setting up proxy venv..."
 create_venv "$PROXY_VENV" fastmcp
 

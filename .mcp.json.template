@@ -1,18 +1,18 @@
 {
   "mcpServers": {
-    "superset-community": {
+    "superset-official": {
       "command": "bash",
-      "args": ["__PROJECT_DIR__/superset/start-community-mcp.sh"],
+      "args": ["__PROJECT_DIR__/superset/start-official-mcp.sh"],
+      "timeout": 60
+    },
+    "superset": {
+      "command": "mcp-superset",
+      "args": ["--transport", "stdio"],
       "env": {
         "SUPERSET_BASE_URL": "http://localhost:8088",
         "SUPERSET_USERNAME": "admin",
         "SUPERSET_PASSWORD": "admin"
       },
-      "timeout": 60
-    },
-    "superset-official": {
-      "command": "bash",
-      "args": ["__PROJECT_DIR__/superset/start-official-mcp.sh"],
       "timeout": 60
     }
   }
