@@ -31,8 +31,9 @@ Do NOT build without explicit approval.
 
 For any virtual datasets planned during the design phase:
 
-1. Call `superset_dataset_create` with the SQL query as a virtual dataset (or use `create_virtual_dataset` if available via the official MCP).
-2. Record the returned `dataset_id` for use in chart creation.
+1. Call `create_virtual_dataset` (official MCP) with `{"request": {"database_id": N, "dataset_name": "...", "sql": "..."}}`.
+2. If official fails, fall back to `superset_dataset_create` (bintocher).
+3. Record the returned `dataset_id` for use in chart creation.
 
 ### Step 3: Create Charts
 
@@ -53,7 +54,7 @@ Use the official MCP `generate_chart` tool with `save_chart=true`:
   - `datasource_type`: Typically `"table"`.
   - Chart-specific configuration (metrics, dimensions, filters, colors, etc.) as defined by the schema from Step 3a.
 
-**Fallback**: If the official MCP `generate_chart` call fails, fall back to `superset_chart_create` (community MCP) with equivalent parameters.
+**Fallback**: If the official MCP `generate_chart` call fails, fall back to `superset_chart_create` (bintocher) with equivalent parameters.
 
 #### 3c. Record Chart IDs
 
@@ -63,15 +64,15 @@ Capture the returned `chart_id` (or `slice_id`) for each successfully created ch
 
 #### 4a. Create the Dashboard
 
-Use the official MCP `generate_dashboard` to create the dashboard shell, or use `superset_dashboard_create` (community) with:
-- `dashboard_title`: From the design spec.
-- `slug`: A URL-friendly version of the title.
+Use the official MCP `generate_dashboard` with `{"request": {"dashboard_title": "...", "chart_ids": [...]}}`.
+
+**CRITICAL**: This is the ONLY way to create a dashboard with proper chart associations. Do NOT use `superset_dashboard_create` (bintocher) — it creates an empty shell and charts won't render.
 
 Record the `dashboard_id`.
 
 #### 4b. Update Layout with position_json
 
-Call `superset_dashboard_update` to set the dashboard layout via `position_json`.
+Call `superset_dashboard_update` (bintocher) to set the dashboard layout via `position_json`.
 
 The `position_json` defines a grid-based layout. Each chart is placed in a `CHART-` element within `ROW-` containers. The grid is 12 columns wide.
 
@@ -170,7 +171,7 @@ This allows users to click on a bar segment or pie slice to filter the entire da
 
 ### Step 7: Rename Charts with Clean Titles
 
-For each chart, call `superset_chart_update` to set a clean, descriptive title following IBCS SAY rules:
+For each chart, call `superset_chart_update` (bintocher) to set a clean, descriptive title following IBCS SAY rules:
 - State the message, not just the metric name.
 - Example: "Monthly Revenue Trend (Last 12 Months)" instead of "Revenue Line Chart".
 - Keep titles concise but informative.

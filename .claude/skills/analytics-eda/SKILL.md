@@ -16,25 +16,23 @@ This skill implements the CRISP-DM Data Understanding phase. Your job is to conn
 
 ## Procedure
 
-### Step 1: Authenticate with Superset
+### Step 1: Connect to or Find the Database
 
-Call `superset_auth_authenticate_user` to obtain an access token. All subsequent Superset calls require this authentication.
+No authentication step needed — bintocher auto-authenticates via env vars.
 
-### Step 2: Connect to or Find the Database
-
-- If the user provided an existing database name/ID, call `superset_database_list` to find it. Confirm the match.
-- If the user provided a new connection string, call `superset_database_create` to register it in Superset. Use a descriptive `database_name` derived from the project context.
+- If the user provided an existing database name/ID, call `superset_database_list` (bintocher) to find it.
+- If the user provided a new connection string, call `superset_database_create` (bintocher) to register it.
 - Capture the `database_id` for all subsequent queries.
 
-### Step 3: Discover Schema
+### Step 2: Discover Schema
 
-1. Call `superset_database_schemas` with the `database_id` to list available schemas.
-2. For each relevant schema (typically `public` or the user-specified schema), call `superset_database_get_tables` to list all tables and views.
-3. Present the discovered schema to the user: list of schemas, tables per schema, and total table count.
+1. Call `superset_database_schemas` (bintocher) with the `database_id` to list available schemas.
+2. Call `superset_database_tables` (bintocher) to list all tables and views.
+3. Present the discovered schema to the user.
 
-### Step 4: Profile Each Table
+### Step 3: Profile Each Table
 
-For each table, execute the following queries via `superset_sqllab_execute_query`:
+For each table, execute the following queries via `superset_sqllab_execute` (bintocher):
 
 #### 4a. Row Count
 ```sql
@@ -94,7 +92,7 @@ FROM schema.table_name;
 
 Batch these queries where possible to reduce round-trips. Combine multiple column profiles into a single query per table when the database supports it.
 
-### Step 5: Classify Columns
+### Step 4: Classify Columns
 
 Assign each column one of the following types based on its data type and profile:
 
@@ -107,7 +105,7 @@ Assign each column one of the following types based on its data type and profile
 | **Identifier (dimension)** | Column name ends with `_id`, `_key`, `_code`, or is a primary key |
 | **Boolean** | Boolean type or has exactly 2 distinct values |
 
-### Step 6: Detect Relationships (Join Keys)
+### Step 5: Detect Relationships (Join Keys)
 
 Look for potential join keys across tables:
 
@@ -117,7 +115,7 @@ Look for potential join keys across tables:
 
 Record detected relationships as: `table_a.column -> table_b.column (confidence: high/medium/low)`.
 
-### Step 7: Flag Data Quality Issues
+### Step 6: Flag Data Quality Issues
 
 Flag any of the following issues:
 
@@ -130,16 +128,16 @@ Flag any of the following issues:
 | Possible duplicate rows | Row count much higher than distinct count of all columns combined | Info |
 | Date range anomalies | Max date in the future or min date unreasonably old | Warning |
 
-### Step 8: Register Physical Datasets
+### Step 7: Register Physical Datasets
 
-For each table that will be used in the dashboard, call `superset_dataset_create` to register it as a physical dataset in Superset. Use the following parameters:
+For each table that will be used in the dashboard, call `superset_dataset_create` (bintocher) to register it as a physical dataset in Superset. Use the following parameters:
 - `database_id`: The database ID from Step 2.
 - `table_name`: The table name.
 - `schema`: The schema name.
 
 Record the returned `dataset_id` for each registered dataset.
 
-### Step 9: Present EDA Summary
+### Step 8: Present EDA Summary
 
 Present a structured summary to the user:
 
