@@ -21,40 +21,82 @@ This skill maps analytical questions to chart types, plans the dashboard layout,
 
 ### Step 1: Brainstorm Visualization Ideas (Diverge)
 
-Before narrowing down, generate a broad set of 10-15 visualization ideas based on the data and questions. This is a creative divergence step.
+Before narrowing down, generate 10-15+ visualization ideas using a **structured question framework**. Don't just list random charts — systematically explore the data through 6 question categories.
 
-For each idea, list:
-- **Idea #**: Short title
-- **Chart type**: What kind of visual
-- **Data used**: Which columns/metrics
-- **Question answered**: Which business question it addresses
-- **Value**: Why this visual would be useful (High/Medium/Low)
+#### Question Framework (6 categories)
 
-Present all ideas to the user in a numbered table:
+Walk through each category and generate ideas based on available columns from the EDA profile and insights:
+
+**A. Overview / KPIs** — "How are we doing overall?"
+- Total revenue/sales/profit KPI
+- Total orders/transactions count
+- Average order value / average margin
+- Customer count
+- Period-over-period comparison (YoY, MoM)
+
+**B. Trends** — "How is it changing over time?"
+- Revenue/profit trend line (monthly, weekly, quarterly)
+- Order volume over time
+- Seasonal pattern detection (which months peak?)
+- YoY growth comparison (overlay years)
+- Moving average to smooth noise
+
+**C. Composition** — "What makes up the total?"
+- Revenue by category/segment/region (bar or pie)
+- Share of total (%) by dimension
+- Stacked composition over time (area chart)
+- Pareto: top N items = X% of total
+
+**D. Comparison** — "How do things compare?"
+- Category vs category (bar chart)
+- Region vs region
+- Segment profitability comparison
+- Top 10 / Bottom 10 ranking
+- Sales vs Profit scatter (correlation)
+
+**E. Profitability & Efficiency** — "Where do we make/lose money?" (if profit/discount/cost data exists)
+- Profit margin by category/sub-category
+- Discount impact on profit
+- Loss-making products/regions
+- Revenue vs profit divergence (high sales ≠ high profit)
+- Cost efficiency by shipping mode
+
+**F. Detail / Drill-down** — "Show me the specifics"
+- Detailed table with all dimensions + metrics
+- Pivot table (category × region matrix)
+- Top/bottom products by name
+- Customer-level detail
+- Geographic drill-down (state/city)
+
+#### Generate Ideas Table
+
+For each relevant idea from the 6 categories above, produce a row:
 
 ```
 ## Visualization Ideas (Brainstorm)
 
-Based on the data profile and your questions, here are 10-15 possible visuals:
+Based on the data profile, insights, and your questions:
 
-| # | Idea | Chart Type | Data | Answers | Value |
-|---|------|-----------|------|---------|-------|
-| 1 | Total Revenue KPI | Big Number | SUM(sales) | "How much total?" | High |
-| 2 | Revenue by Month | Line | sales × order_date | "Trend over time?" | High |
-| 3 | Sales by Category | Bar | sales × category | "Which category leads?" | High |
-| 4 | Top 10 Products | Horizontal Bar | sales × product_name | "Best sellers?" | Medium |
-| 5 | Regional Breakdown | Pie | sales × region | "Revenue share by region?" | Medium |
-| 6 | Segment Comparison | Bar | sales × segment | "Consumer vs Corp vs Home?" | Medium |
-| 7 | Monthly Heatmap | Heatmap | sales × month × year | "Seasonal patterns?" | Medium |
-| 8 | Ship Mode Distribution | Pie | count × ship_mode | "How do we ship?" | Low |
-| 9 | State-level Map | Map | sales × state | "Geographic hotspots?" | Medium |
-| 10 | Sub-Category Ranking | Horizontal Bar | sales × sub_category | "Detailed breakdown?" | High |
-| 11 | YoY Growth Trend | Line (dual) | sales by year | "Are we growing?" | High |
-| 12 | Customer Count Trend | Line | distinct customers × month | "Customer base growth?" | Medium |
-| 13 | Avg Order Value | Big Number | AVG(sales) | "Typical order size?" | Medium |
-| 14 | Category × Region Matrix | Pivot Table | sales × category × region | "Multi-dim breakdown?" | Medium |
-| 15 | Sales Detail Table | Table | all columns | "Raw data access?" | Low |
+| # | Category | Idea | Chart Type | Data | Value |
+|---|----------|------|-----------|------|-------|
+| 1 | A. KPI | Total Revenue | Big Number | SUM(sales) | High |
+| 2 | A. KPI | Total Orders | Big Number | COUNT(DISTINCT order_id) | High |
+| 3 | A. KPI | Avg Order Value | Big Number | AVG(sales) | Medium |
+| 4 | B. Trend | Monthly Revenue Trend | Line | sales × month | High |
+| 5 | B. Trend | Seasonal Heatmap | Heatmap | sales × month × year | Medium |
+| 6 | C. Composition | Revenue by Category | Bar | sales × category | High |
+| 7 | C. Composition | Revenue Share | Pie | sales × region | Medium |
+| 8 | D. Comparison | Top 10 Sub-Categories | H-Bar | sales × sub_category | High |
+| 9 | D. Comparison | Revenue by Region | Bar | sales × region | High |
+| 10 | D. Comparison | Sales vs Profit | Scatter | sales vs profit | Medium |
+| 11 | E. Profit | Margin by Category | Bar | margin% × category | High |
+| 12 | E. Profit | Discount Impact | Bar | avg_profit × discount_band | Medium |
+| 13 | E. Profit | Loss Makers | H-Bar | profit × sub_category (negative) | High |
+| 14 | F. Detail | Category × Region Matrix | Pivot | sales × category × region | Medium |
+| 15 | F. Detail | Detail Table | Table | all dimensions + metrics | Low |
 ```
+
+**Important**: Only generate ideas for columns that actually exist in the data. If there's no `profit` column, skip category E. Reference the EDA profile and insights for available columns.
 
 ### Step 2: Narrow Down (Converge)
 
