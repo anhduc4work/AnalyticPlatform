@@ -133,6 +133,8 @@ Two MCP servers. Priority: Official > bintocher.
 - Official `generate_chart`: big_number, xy (bar/line/area/scatter), pie, table, pivot_table, mixed_timeseries, handlebars — validates config via schema
 - bintocher `superset_chart_create`: ALL 43 types including funnel, gauge, radar, sankey, treemap, sunburst, waterfall, heatmap, histogram, box_plot, bubble, gantt, world_map, country_map, word_cloud, etc. — requires raw `params` JSON
 - **Strategy**: Use official for common 7 types. Use bintocher for everything else.
+- **Tested**: bintocher `superset_chart_create` confirmed working for `funnel` (and all other types)
+- **Delete safety**: bintocher requires `confirm_delete=true` for chart/dashboard deletions
 
 ### When to use which
 | Task | Use |
