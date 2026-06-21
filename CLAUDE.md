@@ -129,10 +129,16 @@ Two MCP servers. Priority: Official > bintocher.
 - Use for: dashboard updates (position_json, json_metadata), database CRUD, SQL Lab, security, filters, export/import
 - Tool names: `superset_dashboard_*`, `superset_chart_*`, `superset_database_*`, `superset_sqllab_*`, etc.
 
+### Chart creation: Official (7 types) vs bintocher (43+ types)
+- Official `generate_chart`: big_number, xy (bar/line/area/scatter), pie, table, pivot_table, mixed_timeseries, handlebars — validates config via schema
+- bintocher `superset_chart_create`: ALL 43 types including funnel, gauge, radar, sankey, treemap, sunburst, waterfall, heatmap, histogram, box_plot, bubble, gantt, world_map, country_map, word_cloud, etc. — requires raw `params` JSON
+- **Strategy**: Use official for common 7 types. Use bintocher for everything else.
+
 ### When to use which
 | Task | Use |
 |------|-----|
-| Create chart | Official `generate_chart` |
+| Create chart (common types) | Official `generate_chart` |
+| Create chart (funnel, gauge, sankey, etc.) | bintocher `superset_chart_create` |
 | Create dashboard | Official `generate_dashboard` |
 | Create virtual dataset | Official `create_virtual_dataset` |
 | Get chart type schema | Official `get_chart_type_schema` |
