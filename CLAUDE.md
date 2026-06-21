@@ -85,6 +85,26 @@ When creating charts via `generate_chart`:
 | Percentages | `.1%` | 45.2% |
 | Decimals | `,.2f` | 1,234.56 |
 
+### Number Formatting
+All numbers must show 0-2 decimal places maximum. Never show raw floats like 728658.5757.
+
+| Type | Format | Example |
+|------|--------|---------|
+| Currency (integer) | `$,.0f` | $728,659 |
+| Currency (cents) | `$,.2f` | $728,658.58 |
+| Percentage | `.1f` | 36.6 |
+| Count/Integer | `,.0f` | 4,922 |
+| Decimal | `,.2f` | 230.77 |
+
+When creating charts, ALWAYS set explicit format strings. Never rely on defaults which show too many decimals.
+
+### Avoid Handlebars Charts
+Do NOT use Handlebars (`viz_type: "handlebars"`) chart type. It has multiple issues:
+- CSP blocks inline `<style>` tags and `unsafe-eval`
+- Custom helpers (`subtract`, `ifEquals`, `gt`) are not available in Superset
+- Fragile and hard to debug
+Use native Superset `table` or `pivot_table_v2` instead.
+
 ### Other Visual Rules
 - **Bar chart labels**: Don't enable data labels on bars when there are many categories — they overlap
 - **Pie chart**: Max 6 slices. Beyond that, use a bar chart instead
