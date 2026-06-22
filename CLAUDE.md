@@ -66,6 +66,12 @@ After building or modifying ANY dashboard, ALWAYS verify it visually using Playw
 
 When creating charts via `generate_chart`, follow these rules to prevent visual overlap and ensure readability:
 
+### Big Number KPI Cards
+- Use `big_number_total` (not `big_number`) for all-time aggregates. `big_number` with trendline shows **last period only**, not the total.
+- Do NOT set `subheader` — it repeats the chart title and is redundant. Leave it as `""`.
+- Do NOT set `granularity_sqla` on KPI cards if you want all-time values. With it set, Superset treats it as time-series and shows the last period.
+- For KPIs that need to respond to dashboard filters, use `adhoc_filters` with `TEMPORAL_RANGE: "No filter"`.
+
 ### Axis Title vs Axis Label Overlap
 Y-axis titles (e.g. "Revenue (USD)") overlap with axis tick labels (e.g. "$800,000") in Superset. There is no `nameGap` control via the API.
 
